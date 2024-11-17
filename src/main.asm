@@ -214,11 +214,6 @@ endGame:
     call CloseWindow
     add rsp, 32
 
-    sub rsp, 32
-    mov rcx, msg 
-    call printf
-    add rsp, 32 
-
-    mov rax, 0
+    xor rcx, rcx
     call ExitProcess
-    ret
+    pop rbp
