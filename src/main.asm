@@ -6,8 +6,6 @@ default rel
 
 ; std
 extern printf
-; windows API
-extern ExitProcess
 ; raylib
 global main
 extern InitWindow
@@ -214,6 +212,6 @@ endGame:
     call CloseWindow
     add rsp, 32
 
-    xor rcx, rcx
-    call ExitProcess
     pop rbp
+    ret
+
