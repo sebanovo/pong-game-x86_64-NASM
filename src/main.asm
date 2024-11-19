@@ -1,8 +1,8 @@
 bits 64
 default rel
 
-%include "src/colors.inc"
-%include "src/keys.inc"
+%include "colors.asm"
+%include "keys.asm"
 
 ; std
 extern printf

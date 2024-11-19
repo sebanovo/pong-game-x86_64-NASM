@@ -1,79 +1,89 @@
+
 # Pong Game en Windows hecho en Nasm x86_64
 
-<div align="center"> <img src="https://github.com/user-attachments/assets/dfcfd32a-726f-4372-885c-9145cddc1165" alt="pong-game"> </div>
+<div align="center"> 
+  <img src="https://github.com/user-attachments/assets/dfcfd32a-726f-4372-885c-9145cddc1165" alt="pong-game" width="400">
+</div>
 
-## Descripción
+## 🎮 Descripción
 
-Este proyecto es una implementación del clásico juego de Pong utilizando el lenguaje de
-programación Assembler y la biblioteca gráfica raylib. El objetivo del juego es simple:
-dos jugadores controlan paletas para golpear una pelota y evitar que pase por sus
-respectivos lados de la pantalla. El primer jugador en alcanzar el puntaje máximo gana el
-juego.
+Este proyecto es una implementación del clásico juego de Pong utilizando el lenguaje de programación Assembly con NASM y la biblioteca gráfica **raylib**. ¡Disfruta de un emocionante duelo entre dos jugadores en pantalla!
 
-## Características
+### 🏆 Objetivo del Juego
 
-- **Modo de dos jugadores**: Cada jugador controla una paleta.
-- **Detección de colisiones**: La pelota rebota en las paletas y los bordes de la
-  pantalla.
-- **Interfaz gráfica**: Utiliza raylib para renderizar gráficos simples y efectivos.
+Cada jugador controla una paleta que debe golpear la pelota y evitar que pase por su lado de la pantalla. El primer jugador en alcanzar el puntaje máximo gana el juego.
 
-## Requisitos
+## 🚀 Características
 
-- **Compilador C**: GCC o cualquier otro compilador compatible.
-- **raylib**: Biblioteca gráfica para C/C++. Puedes descargarla e instalarla desde
-  [raylib](https://www.raylib.com/).
+- **Modo de dos jugadores**: Ideal para partidas competitivas.
+- **Detección precisa de colisiones**: La pelota rebota en las paletas y los bordes de la pantalla.
+- **Interfaz gráfica sencilla**: Utiliza **raylib** para ofrecer gráficos limpios y efectivos.
 
-## Instalación
+## 📋 Requisitos
 
-1. Clona este repositorio:
+- **Compilador C**: GCC o cualquier otro compatible.
+- **NASM**: Ensamblador para procesadores x86/x86_64.
+- **raylib**: Biblioteca gráfica para C/C++. Descárgala desde [raylib](https://www.raylib.com/).
+- **CMake** (opcional): Para generar el sistema de compilación.
+
+## 🛠️ Instalación
+
+1. **Clona el repositorio**:
 
 ```bash
 git clone https://github.com/sebanovo/pong-game.git
-
 cd pong-game
 ```
 
-2. Compila el código:
+2. **Compila el código**:
 
-- 1ra Forma con `make.bat`:
+### Opción 1: Compilación con CMake
 
-```powershell
-./make.bat
-```
-
-- 2da Forma con `gcc`
-
-```powershell
-
+```bash
 mkdir build
 
-nasm -f win64 -o src/main.o src/main.asm
+cd build
 
-gcc -std=c11 -Wall -I./include -L./lib -o build/game src/main.o lib/libraylib.a -lopengl32 -lgdi32 -lkernel32 -lwinmm
+# Configura el proyecto
+cmake ..
+
+# Compila el proyecto
+cmake --build .
 ```
 
-## Controles
+### Opción 2: Compilación manual
 
-- `Jugador 1`: Usa las teclas W y S para mover la paleta hacia arriba y hacia abajo.
+```bash
+mkdir build
 
-- `Jugador 2`: Usa las teclas de flecha Arriba y Abajo para mover la paleta hacia arriba y
-  hacia abajo.
+# Compila el archivo ensamblador
+nasm -f win64  -I./src -o build/main.o src/main.asm
 
-## Correlo 🚀
-
+# Enlaza y genera el ejecutable
+gcc -std=c11 -Wall -L./lib -o build/game build/main.o lib/libraylib.a -lopengl32 -lgdi32 -lkernel32 -lwinmm
 ```
+
+## 🎮 Controles
+
+- **Jugador 1**: Usa las teclas `W` (arriba) y `S` (abajo).
+- **Jugador 2**: Usa las teclas de flecha `↑` (arriba) y `↓` (abajo).
+
+## ▶️ Ejecuta el Juego
+
+```bash
 ./build/game.exe
 ```
 
-## Fuentes de Código
+## 📂 Fuentes y Librerías
 
-- En caso de que tu compilador no reconozca las librerias de raylib de este repositorio
-  puedes compilar las librerias por tí mismo
+Si el compilador no reconoce las librerías de raylib incluidas, puedes compilarlas manualmente. Encuentra el código fuente en su repositorio oficial de GitHub: [raylib github](https://github.com/raysan5/raylib/releases/tag/5.5).
 
-- Puedes encontrar el código fuente de raylib en su repositorio oficial de GitHub
-  [raylib github](https://github.com/raysan5/raylib/releases/tag/5.5)
+## 🤝 Contribuciones
 
-# Contribuciones
+¡Tus contribuciones son bienvenidas! Si encuentras algún problema o tienes una mejora, abre un **issue** o envía un **pull request**.
 
-¡Siéntete libre de contribuir mejorando el codigo! Abre un problema o envía una solicitud
-de extracción.
+---
+
+<div align="center">
+  ¡Gracias por apoyar este proyecto! 🚀
+</div>
