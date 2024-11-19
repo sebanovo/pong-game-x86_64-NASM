@@ -3,6 +3,7 @@ default rel
 
 %include "colors.asm"
 %include "keys.asm"
+%include "state_game.asm"
 
 ; std
 extern printf
@@ -22,13 +23,13 @@ extern IsKeyDown
 
 section .data
     ; window 
-    screen_width equ 800
-    screen_height equ 450
+    screen_width equ 1000 
+    screen_height equ 650
+    x_off_set equ 50
+    radius_center_circle dd 50.0
+    font_size equ 50
+    max_score equ 50
     window_title db "Ping Pong Game", 0
-    message db "Congrats! You created your first window!", 0
-    font_size equ 20
-    text_color dd 0xFFFFFFFF
-    msg db "FIN DEL JUEGO", 0
     ; ball
     ball_radius dd 5.0
     ball_velocity equ 10
@@ -45,6 +46,8 @@ section .data
     paddle_y dd (screen_height / 2) - (paddle_height / 2);
     paddle_velocity equ 10
 
+
+    msg db "FIN DEL JUEGO", 0
 section .text
     global main
 main:
