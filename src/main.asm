@@ -29,16 +29,18 @@ extern CheckCollisionCircleRec
 
 section .data
     ; window 
+    window_title db "Ping Pong Game", 0
     screen_width equ 1000 
     screen_height equ 650
     ; x_off_set equ 50
     radius_center_circle dd 50.0
     font_size equ 50
-    max_score equ 50
-    window_title db "Ping Pong Game", 0
+
+    max_score dd 3
+    state db ONGOING
 
     ; ball 
-    ball_radius dd 5.0
+    ball_radius dd 10.0
 
     ball_x dd 500.0 ; screen_width / 2
     ball_y dd 325.0 ; screen_height / 2
@@ -63,13 +65,14 @@ section .data
     player2_position_y dd 333.3333333333 ; screen_width / 3 
     player2_score dd 0
 
-    msg db "FIN DEL JUEGO", 0
-
 section .rodata
     neg_mask dd 0x80000000 
     mask dd 0x7FFFFFFF
     const_2 dd 2.0  
     const_0_1  dd 0.1
+    msg_player1_win db "Player 1 wins!", 10, 0
+    msg_player2_win db "Player 2 wins!", 10,0
+    msg_end_game db "FIN DEL JUEGO!", 10, 0
 
 section .text
     global main
@@ -95,7 +98,11 @@ main_loop:
     call WindowShouldClose
     add rsp, 32
     test eax, eax
-    jnz endGame 
+    jnz end_game
+
+    mov al, [state]
+    cmp al, ONGOING 
+    jnz end_game
 
     sub rsp, 32
     call BeginDrawing
@@ -483,16 +490,70 @@ check_collision_between_ball_and_paddles:
     movss dword[ball_speed_y], xmm0
     fin2:
 
+check_winner:
+    .L1:
+        mov     edx, [player1_score]
+        mov     eax, [max_score]
+        cmp     edx, eax
+        jb      .L2
+        mov     eax, [player1_score]
+        mov     edx, [player2_score]
+        cmp     edx, eax
+        jnb     .L2
+        mov     byte[state], PLAYER1_WIN
+        jmp     .L3
+    .L2:
+        mov     edx, [player2_score]
+        mov     eax, [max_score]
+        cmp     edx, eax
+        jb      .L4
+        mov     eax, [player2_score]
+        mov     edx, [player1_score]
+        cmp     edx, eax
+        jnb     .L4
+        mov     byte[state], PLAYER2_WIN
+        jmp     .L3
+    .L4:
+        mov     byte[state], ONGOING
+    .L3:
+
     sub rsp, 32
     call EndDrawing
     add rsp, 32
 
     jmp main_loop
 
-endGame:
+end_game:
     sub rsp ,32
     call CloseWindow
     add rsp, 32
+
+    switch_case:
+        cmp byte[state], PLAYER1_WIN
+        je  .print1
+        cmp byte[state], PLAYER2_WIN
+        je  .print2
+        cmp byte[state], ONGOING
+        je  .print3
+
+    .print1:
+        sub rsp, 32
+        mov rcx, msg_player1_win
+        call printf
+        add rsp, 32
+        jmp   .print3 
+    .print2:
+        sub rsp, 32
+        mov rcx, msg_player2_win
+        call printf
+        add rsp, 32
+        jmp   .print3 
+
+    .print3:
+        sub rsp, 32
+        mov rcx, msg_end_game
+        call printf
+        add rsp, 32
 
     pop rbp
     ret

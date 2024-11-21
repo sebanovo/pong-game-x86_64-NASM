@@ -3,6 +3,6 @@
 
 %define PLAYER1_WIN 0
 %define PLAYER2_WIN 1
-%define ONGOING 2
+%define ONGOING     2
 
 %endif
