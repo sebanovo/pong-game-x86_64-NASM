@@ -50,6 +50,7 @@
 %define  KEY_BACKSLASH        92       ; Key: '\'
 %define  KEY_RIGHT_BRACKET    93       ; Key: ]
 %define  KEY_GRAVE            96       ; Key: `
+
 ; Function keys
 %define  KEY_SPACE            32       ; Key: Space
 %define  KEY_ESCAPE           256      ; Key: Esc
@@ -92,6 +93,7 @@
 %define  KEY_RIGHT_ALT        346      ; Key: Alt right
 %define  KEY_RIGHT_SUPER      347      ; Key: Super right
 %define  KEY_KB_MENU          348      ; Key: KB menu
+
 ; Keypad keys
 %define  KEY_KP_0             320      ; Key: Keypad 0
 %define  KEY_KP_1             321      ; Key: Keypad 1
@@ -110,6 +112,7 @@
 %define  KEY_KP_ADD           334      ; Key: Keypad +
 %define  KEY_KP_ENTER         335      ; Key: Keypad Enter
 %define  KEY_KP_EQUAL         336      ; Key: Keypad =
+
 ; Android key buttons
 %define  KEY_BACK             4        ; Key: Android back button
 %define  KEY_MENU             82       ; Key: Android menu button

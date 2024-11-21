@@ -37,7 +37,7 @@ section .data
     font_size equ 50
 
     max_score dd 50
-    state db ONGOING
+    game_state db ONGOING
 
     ; ball 
     ball_radius dd 10.0
@@ -53,23 +53,23 @@ section .data
     paddle_width dd 20.0
     paddle_height dd 100.0 
     paddle_speed_y_axis dd 10.0
-    score_format db "%u",0
 
     ; player1 
-    player1_position_x dd 50.0
-    player1_position_y dd 333.3333333333 ; screen_width / 3 
+    player1_x dd 50.0
+    player1_y dd 333.3333333333 ; screen_width / 3 
     player1_score dd 0
 
     ; player2
-    player2_position_x dd 960.0 ; screen_width - x_off_set - paddle_width
-    player2_position_y dd 333.3333333333 ; screen_width / 3 
+    player2_x dd 960.0 ; screen_width - x_off_set - paddle_width
+    player2_y dd 333.3333333333 ; screen_width / 3 
     player2_score dd 0
 
 section .rdata
     neg_mask dd 0x80000000 
-    mask dd 0x7FFFFFFF
+    pos_mask dd 0x7FFFFFFF
     const_2 dd 2.0  
     const_0_1  dd 0.1
+    score_format db "%u",0
     msg_player1_win db "Player 1 wins!", 10, 0
     msg_player2_win db "Player 2 wins!", 10,0
     msg_end_game db "FIN DEL JUEGO!", 10, 0
@@ -100,7 +100,7 @@ main_loop:
     test eax, eax
     jnz end_game
 
-    mov al, [state]
+    mov al, [game_state]
     cmp al, ONGOING 
     jnz end_game
 
@@ -180,9 +180,9 @@ draw_ball:
 draw_paddles: 
     ; draw player 1
     sub rsp, 64
-    movss xmm0, dword[player1_position_x]
+    movss xmm0, dword[player1_x]
     movss -16[rbp], xmm0
-    movss xmm0, dword[player1_position_y]
+    movss xmm0, dword[player1_y]
     movss -12[rbp], xmm0
     movss xmm0, dword[paddle_width]
     movss -8[rbp], xmm0
@@ -202,9 +202,9 @@ draw_paddles:
 
     ; draw player 2
     sub rsp, 64
-    movss xmm0, dword[player2_position_x]
+    movss xmm0, dword[player2_x]
     movss -16[rbp], xmm0
-    movss xmm0, dword[player2_position_y]
+    movss xmm0, dword[player2_y]
     movss -12[rbp], xmm0
     movss xmm0, dword[paddle_width]
     movss -8[rbp], xmm0
@@ -230,14 +230,14 @@ mov_player1_KEY_W:
     cmp rax, 0 
     je  continue1
     
-    movss xmm0, dword[player1_position_y]
+    movss xmm0, dword[player1_y]
     pxor    xmm1, xmm1
     comiss  xmm0, xmm1
     jbe     continue1
 
-    movss xmm0, dword[player1_position_y]
+    movss xmm0, dword[player1_y]
     subss xmm0, dword [paddle_speed_y_axis]
-    movss dword[player1_position_y], xmm0
+    movss dword[player1_y], xmm0
     continue1:
 
 mov_player1_KEY_S:
@@ -251,12 +251,12 @@ mov_player1_KEY_S:
     mov eax, screen_height 
     cvtsi2ss xmm0, eax   
     subss   xmm0, dword[paddle_height]
-    comiss  xmm0, dword[player1_position_y] 
+    comiss  xmm0, dword[player1_y] 
     jbe     continue2
 
-    movss xmm0, dword[player1_position_y]
+    movss xmm0, dword[player1_y]
     addss xmm0, dword [paddle_speed_y_axis]
-    movss dword[player1_position_y], xmm0
+    movss dword[player1_y], xmm0
     continue2:
 
 mov_player2_KEY_UP:
@@ -267,14 +267,14 @@ mov_player2_KEY_UP:
     cmp rax, 0 
     je  continue3
     
-    movss xmm0, dword[player2_position_y]
+    movss xmm0, dword[player2_y]
     pxor    xmm1, xmm1
     comiss  xmm0, xmm1
     jbe     continue3
 
-    movss xmm0, dword[player2_position_y]
+    movss xmm0, dword[player2_y]
     subss xmm0, dword [paddle_speed_y_axis]
-    movss dword[player2_position_y], xmm0
+    movss dword[player2_y], xmm0
     continue3:
 
 mov_player2_KEY_DOWN:
@@ -288,12 +288,12 @@ mov_player2_KEY_DOWN:
     mov eax, screen_height 
     cvtsi2ss xmm0, eax   
     subss   xmm0, dword[paddle_height]
-    comiss  xmm0, dword[player2_position_y] 
+    comiss  xmm0, dword[player2_y] 
     jbe     continue4
 
-    movss xmm0, dword[player2_position_y]
+    movss xmm0, dword[player2_y]
     addss xmm0, dword [paddle_speed_y_axis]
-    movss dword[player2_position_y], xmm0
+    movss dword[player2_y], xmm0
     continue4:
 
 check_boundary_collision:
@@ -392,9 +392,9 @@ check_collision_between_ball_and_paddles:
     movss   xmm0, dword[ball_radius] 
     movss   -4[rbp], xmm0
 
-    movss   xmm0, dword[player1_position_x] 
+    movss   xmm0, dword[player1_x] 
     movss   -32[rbp], xmm0
-    movss   xmm0, dword[player1_position_y] 
+    movss   xmm0, dword[player1_y] 
     movss   -28[rbp], xmm0
     movss   xmm0, dword[paddle_width]
     movss   -24[rbp], xmm0
@@ -417,16 +417,16 @@ check_collision_between_ball_and_paddles:
     je      fin1
 
     ;; dentro del if
-    movss xmm0, dword[player1_position_x] 
+    movss xmm0, dword[player1_x] 
     addss xmm0, dword[paddle_width] 
     addss xmm0, dword[ball_radius]
     movss dword[ball_x], xmm0
     movss   xmm0, dword[ball_speed_x]
-    movss   xmm1, dword[mask] 
+    movss   xmm1, dword[pos_mask] 
     andps   xmm0, xmm1
     movss   dword[ball_speed_x] , xmm0
     movss   xmm0, dword[ball_y] 
-    movss   xmm2, dword[player1_position_y]  
+    movss   xmm2, dword[player1_y]  
     movss   xmm1, dword[paddle_height] 
     movss   xmm3, dword[const_2]
     divss   xmm1, xmm3
@@ -445,9 +445,9 @@ check_collision_between_ball_and_paddles:
     movss   xmm0, dword[ball_radius] 
     movss   -4[rbp], xmm0
 
-    movss   xmm0, dword[player2_position_x] 
+    movss   xmm0, dword[player2_x] 
     movss   -32[rbp], xmm0
-    movss   xmm0, dword[player2_position_y] 
+    movss   xmm0, dword[player2_y] 
     movss   -28[rbp], xmm0
     movss   xmm0, dword[paddle_width]
     movss   -24[rbp], xmm0
@@ -470,17 +470,17 @@ check_collision_between_ball_and_paddles:
     je      fin2 
 
     ;; dentro del if
-    movss xmm0, dword[player2_position_x] 
+    movss xmm0, dword[player2_x] 
     subss xmm0, dword[ball_radius] 
     movss dword[ball_x], xmm0
     movss   xmm0, dword[ball_speed_x]
-    movss   xmm1, dword[mask] 
+    movss   xmm1, dword[pos_mask] 
     andps   xmm0, xmm1
     movss   xmm1, dword[neg_mask]
     xorps   xmm0,  xmm1 
     movss   dword[ball_speed_x] , xmm0
     movss   xmm0, dword[ball_y] 
-    movss   xmm2, dword[player2_position_y]  
+    movss   xmm2, dword[player2_y]  
     movss   xmm1, dword[paddle_height] 
     movss   xmm3, dword[const_2]
     divss   xmm1, xmm3
@@ -500,7 +500,7 @@ check_winner:
         mov     edx, [player2_score]
         cmp     edx, eax
         jnb     .L2
-        mov     byte[state], PLAYER1_WIN
+        mov     byte[game_state], PLAYER1_WIN
         jmp     .L3
     .L2:
         mov     edx, [player2_score]
@@ -511,10 +511,10 @@ check_winner:
         mov     edx, [player1_score]
         cmp     edx, eax
         jnb     .L4
-        mov     byte[state], PLAYER2_WIN
+        mov     byte[game_state], PLAYER2_WIN
         jmp     .L3
     .L4:
-        mov     byte[state], ONGOING
+        mov     byte[game_state], ONGOING
     .L3:
 
     sub rsp, 32
@@ -529,11 +529,11 @@ end_game:
     add rsp, 32
 
     switch_case:
-        cmp byte[state], PLAYER1_WIN
+        cmp byte[game_state], PLAYER1_WIN
         je  .print1
-        cmp byte[state], PLAYER2_WIN
+        cmp byte[game_state], PLAYER2_WIN
         je  .print2
-        cmp byte[state], ONGOING
+        cmp byte[game_state], ONGOING
         je  .print3
 
     .print1:

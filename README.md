@@ -21,17 +21,17 @@ Cada jugador controla una paleta que debe golpear la pelota y evitar que pase po
 
 ## 📋 Requisitos
 
-- **Compilador C**: GCC o cualquier otro compatible.
-- **NASM**: Ensamblador para procesadores x86/x86_64.
-- **raylib**: Biblioteca gráfica para C/C++. Descárgala desde [raylib](https://www.raylib.com/).
-- **CMake** (opcional): Para generar el sistema de compilación.
+- **Compilador C**: GCC para compilar y enlazar `(te recomiendo este compilador si quieres compilar este proyecto)` `->` [gcc](https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/8.1.0/threads-posix/seh/).
+- **NASM**: Ensamblador para procesadores x86/x86_64 [nasm](https://www.nasm.us/pub/nasm/releasebuilds/2.16.03/win64/).
+- **raylib**: Biblioteca gráfica para C/C++. Descárgala desde [raylib](https://github.com/raysan5/raylib/releases/).
+- **CMake** (opcional): Para generar el sistema de compilación [cmake](https://cmake.org/download/).
 
 ## 🛠️ Instalación
 
 1. **Clona el repositorio**:
 
 ```bash
-git clone https://github.com/sebanovo/pong-game.git
+git clone https://github.com/sebanovo/pong-game-x86_64-NASM.git
 cd pong-game
 ```
 
