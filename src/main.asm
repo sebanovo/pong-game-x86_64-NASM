@@ -36,7 +36,7 @@ section .data
     radius_center_circle dd 50.0
     font_size equ 50
 
-    max_score dd 3
+    max_score dd 50
     state db ONGOING
 
     ; ball 
