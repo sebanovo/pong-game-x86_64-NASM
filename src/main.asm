@@ -65,7 +65,7 @@ section .data
     player2_position_y dd 333.3333333333 ; screen_width / 3 
     player2_score dd 0
 
-section .rodata
+section .rdata
     neg_mask dd 0x80000000 
     mask dd 0x7FFFFFFF
     const_2 dd 2.0  
