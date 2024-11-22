@@ -27,6 +27,24 @@ extern DrawRectangleRounded
 extern DrawCircleV
 extern CheckCollisionCircleRec
 
+struc Ball 
+    .x:           resd 1
+    .y:           resd 1
+    .radius:      resd 1
+endstruc
+
+struc Player 
+    .x:           resd 1
+    .y:           resd 1
+    .score:       resd 1
+endstruc
+
+struc Paddle 
+    .width:       resd 1
+    .height:      resd 1
+    .speed:       resd 1
+endstruc
+
 section .data
     ; window 
     window_title db "Ping Pong Game", 0
@@ -38,29 +56,37 @@ section .data
     max_score dd 50
     game_state db ONGOING
 
-    ; ball 
-    ball_radius dd 10.0
-    ball_x dd 500.0 ; screen_width / 2
-    ball_y dd 325.0 ; screen_height / 2
+ball:
+   istruc Ball 
+   at Ball.x,      dd 325.0
+   at Ball.y,      dd 500.0
+   at Ball.radius, dd 10.0
+   iend
 
     ; ball_speed equ 10
     ball_speed_x dd 10.0 ; ball_speed
     ball_speed_y dd 10.0 ; ball_speed
 
-    ; paddle 
-    paddle_width dd 20.0
-    paddle_height dd 100.0 
-    paddle_speed_y_axis dd 10.0
+paddle:
+   istruc Paddle 
+   at Paddle.width,  dd 20.0
+   at Paddle.height, dd 100.0
+   at Paddle.speed,  dd 10.0 
+   iend
 
-    ; player1 
-    player1_x dd 50.0
-    player1_y dd 333.3333333333 ; screen_width / 3 
-    player1_score dd 0
+player1:
+   istruc Player 
+   at Player.x,      dd 50.0
+   at Player.y,      dd 333.3333333333
+   at Player.score,  dd 0 
+   iend
 
-    ; player2
-    player2_x dd 960.0 ; screen_width - x_off_set - paddle_width
-    player2_y dd 333.3333333333 ; screen_width / 3 
-    player2_score dd 0
+player2:
+   istruc Player 
+   at Player.x,      dd 960.0
+   at Player.y,      dd 333.3333333333
+   at Player.score,  dd 0 
+   iend
 
 section .rdata
     neg_mask dd 0x80000000 
@@ -126,7 +152,7 @@ draw_halfway_line:
 draw_score:
     sub rsp, 32
     mov ecx, score_format
-    mov edx, [player1_score]
+    mov edx, [player1 + Player.score]
     call TextFormat
     add rsp, 32
 
@@ -141,7 +167,7 @@ draw_score:
 
     sub rsp, 32
     mov ecx, score_format
-    mov edx, [player2_score]
+    mov edx, [player2 + Player.score]
     call TextFormat
     add rsp, 32
 
@@ -165,12 +191,12 @@ draw_centre_circle:
 
 draw_ball:
     sub rsp, 32
-    movss xmm0, dword[ball_x]
+    movss xmm0, dword[ball + Ball.x]
     movss -8[rbp], xmm0
-    movss xmm0, dword[ball_y]
+    movss xmm0, dword[ball + Ball.y]
     movss -4[rbp], xmm0
     mov rcx, -8[rbp]
-    movss xmm1, dword[ball_radius]
+    movss xmm1, dword[ball + Ball.radius]
     mov r8d, WHITE 
     call DrawCircleV
     add rsp, 32 
@@ -178,13 +204,13 @@ draw_ball:
 draw_paddles: 
     ; draw player 1
     sub rsp, 64
-    movss xmm0, dword[player1_x]
+    movss xmm0, dword[player1 + Player.x]
     movss -16[rbp], xmm0
-    movss xmm0, dword[player1_y]
+    movss xmm0, dword[player1 + Player.y]
     movss -12[rbp], xmm0
-    movss xmm0, dword[paddle_width]
+    movss xmm0, dword[paddle + Paddle.width]
     movss -8[rbp], xmm0
-    movss xmm0, dword[paddle_height]
+    movss xmm0, dword[paddle + Paddle.height]
     movss -4[rbp], xmm0
     mov rax, -16[rbp]
     mov rdx, -8[rbp]
@@ -192,7 +218,7 @@ draw_paddles:
     mov -24[rbp], rdx
     lea rax, -32[rbp]
     mov rcx, rax
-    movss xmm1, dword[ball_radius]
+    movss xmm1, dword[ball + Ball.radius]
     mov r8d, 0
     mov r9d, WHITE
     call DrawRectangleRounded
@@ -200,13 +226,13 @@ draw_paddles:
 
     ; draw player 2
     sub rsp, 64
-    movss xmm0, dword[player2_x]
+    movss xmm0, dword[player2 + Player.x]
     movss -16[rbp], xmm0
-    movss xmm0, dword[player2_y]
+    movss xmm0, dword[player2 + Player.y]
     movss -12[rbp], xmm0
-    movss xmm0, dword[paddle_width]
+    movss xmm0, dword[paddle + Paddle.width]
     movss -8[rbp], xmm0
-    movss xmm0, dword[paddle_height]
+    movss xmm0, dword[paddle + Paddle.height]
     movss -4[rbp], xmm0
     mov rax, -16[rbp]
     mov rdx, -8[rbp]
@@ -214,7 +240,7 @@ draw_paddles:
     mov -24[rbp], rdx
     lea rax, -32[rbp]
     mov rcx, rax
-    movss xmm1, dword[ball_radius]
+    movss xmm1, dword[ball + Ball.radius]
     mov r8d, 0
     mov r9d, WHITE
     call DrawRectangleRounded
@@ -228,14 +254,14 @@ mov_player1_KEY_W:
     cmp rax, 0 
     je  continue1
     
-    movss xmm0, dword[player1_y]
+    movss xmm0, dword[player1 + Player.y]
     pxor    xmm1, xmm1
     comiss  xmm0, xmm1
     jbe     continue1
 
-    movss xmm0, dword[player1_y]
-    subss xmm0, dword [paddle_speed_y_axis]
-    movss dword[player1_y], xmm0
+    movss xmm0, dword[player1 + Player.y]
+    subss xmm0, dword [paddle + Paddle.speed]
+    movss dword[player1 + Player.y], xmm0
     continue1:
 
 mov_player1_KEY_S:
@@ -248,13 +274,13 @@ mov_player1_KEY_S:
 
     mov eax, screen_height 
     cvtsi2ss xmm0, eax   
-    subss   xmm0, dword[paddle_height]
-    comiss  xmm0, dword[player1_y] 
+    subss   xmm0, dword[paddle + Paddle.height]
+    comiss  xmm0, dword[player1 + Player.y] 
     jbe     continue2
 
-    movss xmm0, dword[player1_y]
-    addss xmm0, dword [paddle_speed_y_axis]
-    movss dword[player1_y], xmm0
+    movss xmm0, dword[player1 + Player.y]
+    addss xmm0, dword [paddle + Paddle.speed]
+    movss dword[player1 + Player.y], xmm0
     continue2:
 
 mov_player2_KEY_UP:
@@ -265,14 +291,14 @@ mov_player2_KEY_UP:
     cmp rax, 0 
     je  continue3
     
-    movss xmm0, dword[player2_y]
+    movss xmm0, dword[player2 + Player.y]
     pxor    xmm1, xmm1
     comiss  xmm0, xmm1
     jbe     continue3
 
-    movss xmm0, dword[player2_y]
-    subss xmm0, dword [paddle_speed_y_axis]
-    movss dword[player2_y], xmm0
+    movss xmm0, dword[player2 + Player.y]
+    subss xmm0, dword [paddle + Paddle.speed]
+    movss dword[player2 + Player.y], xmm0
     continue3:
 
 mov_player2_KEY_DOWN:
@@ -285,19 +311,19 @@ mov_player2_KEY_DOWN:
 
     mov eax, screen_height 
     cvtsi2ss xmm0, eax   
-    subss   xmm0, dword[paddle_height]
-    comiss  xmm0, dword[player2_y] 
+    subss   xmm0, dword[paddle + Paddle.height]
+    comiss  xmm0, dword[player2 + Player.y] 
     jbe     continue4
 
-    movss xmm0, dword[player2_y]
-    addss xmm0, dword [paddle_speed_y_axis]
-    movss dword[player2_y], xmm0
+    movss xmm0, dword[player2 + Player.y]
+    addss xmm0, dword [paddle + Paddle.speed]
+    movss dword[player2 + Player.y], xmm0
     continue4:
 
 check_boundary_collision:
     L1:
-    movss   xmm0, [ball_x]
-    addss   xmm0, dword[ball_radius]
+    movss   xmm0, [ball + Ball.x]
+    addss   xmm0, dword[ball + Ball.radius]
     mov eax, screen_width
     cvtsi2ss xmm1, eax 
     comiss  xmm0, xmm1 
@@ -308,24 +334,24 @@ check_boundary_collision:
     mov ebx, screen_width
     cvtsi2ss xmm0, ebx
     divss   xmm0, xmm1
-    movss dword[ball_x], xmm0
+    movss dword[ball + Ball.x], xmm0
 
     mov ebx, screen_height 
     cvtsi2ss xmm0, ebx
     divss   xmm0, xmm1
-    movss dword[ball_y], xmm0
+    movss dword[ball + Ball.y], xmm0
 
     movss xmm0, dword[ball_speed_x]
     movd xmm1, dword [neg_mask] 
     xorps   xmm0, xmm1
     movss [ball_speed_x], xmm0
-    inc dword[player1_score]
+    inc dword[player1 + Player.score]
     jmp  exit_check_boundary_collision
 
     L2:
-    movss   xmm0, dword[ball_x]
+    movss   xmm0, dword[ball + Ball.x]
     movaps  xmm1, xmm0
-    subss   xmm1, dword[ball_radius] 
+    subss   xmm1, dword[ball + Ball.radius] 
     pxor    xmm0, xmm0
     comiss  xmm0, xmm1
     jbe     L3
@@ -335,30 +361,30 @@ check_boundary_collision:
     mov ebx, screen_width
     cvtsi2ss xmm0, ebx
     divss   xmm0, xmm1
-    movss dword[ball_x], xmm0
+    movss dword[ball + Ball.x], xmm0
 
     mov ebx, screen_height 
     cvtsi2ss xmm0, ebx
     divss   xmm0, xmm1
-    movss dword[ball_y], xmm0
+    movss dword[ball + Ball.y], xmm0
 
     movss xmm0, dword[ball_speed_x]
     movd xmm1, dword [neg_mask] 
     xorps   xmm0, xmm1
     movss [ball_speed_x], xmm0
-    inc dword[player2_score]
+    inc dword[player2 + Player.score]
     jmp  exit_check_boundary_collision
 
     L3:
-    movss   xmm0, dword[ball_y]
-    addss   xmm0, dword[ball_radius] 
+    movss   xmm0, dword[ball + Ball.y]
+    addss   xmm0, dword[ball + Ball.radius] 
     mov eax, screen_height
     cvtsi2ss xmm1, eax
     comiss  xmm0, xmm1 
     ja      L7
-    movss   xmm0, dword[ball_y] 
+    movss   xmm0, dword[ball + Ball.y] 
     movaps  xmm1, xmm0
-    subss   xmm1, dword[ball_radius] 
+    subss   xmm1, dword[ball + Ball.radius] 
     pxor    xmm0, xmm0
     comiss  xmm0, xmm1
     jbe     L4
@@ -373,30 +399,30 @@ check_boundary_collision:
     exit_check_boundary_collision:
 
 move_ball:
-    movss xmm0, dword[ball_x]
+    movss xmm0, dword[ball + Ball.x]
     addss xmm0, dword[ball_speed_x] 
-    movss dword[ball_x] ,xmm0
-    movss xmm0, dword[ball_y]
+    movss dword[ball + Ball.x] ,xmm0
+    movss xmm0, dword[ball + Ball.y]
     addss xmm0, dword[ball_speed_y] 
-    movss dword[ball_y] ,xmm0
+    movss dword[ball + Ball.y] ,xmm0
 
 check_collision_between_ball_and_paddles:
     if_for_player1:
     sub rsp, 80
-    movss   xmm0, dword[ball_x] 
+    movss   xmm0, dword[ball + Ball.x] 
     movss    -12[rbp], xmm0
-    movss   xmm0, dword[ball_y] 
+    movss   xmm0, dword[ball + Ball.y] 
     movss   -8[rbp], xmm0
-    movss   xmm0, dword[ball_radius] 
+    movss   xmm0, dword[ball + Ball.radius] 
     movss   -4[rbp], xmm0
 
-    movss   xmm0, dword[player1_x] 
+    movss   xmm0, dword[player1 + Player.x] 
     movss   -32[rbp], xmm0
-    movss   xmm0, dword[player1_y] 
+    movss   xmm0, dword[player1 + Player.y] 
     movss   -28[rbp], xmm0
-    movss   xmm0, dword[paddle_width]
+    movss   xmm0, dword[paddle + Paddle.width]
     movss   -24[rbp], xmm0
-    movss   xmm0, dword[paddle_height] 
+    movss   xmm0, dword[paddle + Paddle.height] 
     movss   -20[rbp], xmm0
 
     mov     rax, -32[rbp]
@@ -415,17 +441,17 @@ check_collision_between_ball_and_paddles:
     je      fin1
 
     ;; dentro del if
-    movss xmm0, dword[player1_x] 
-    addss xmm0, dword[paddle_width] 
-    addss xmm0, dword[ball_radius]
-    movss dword[ball_x], xmm0
+    movss xmm0, dword[player1 + Player.x] 
+    addss xmm0, dword[paddle + Paddle.width] 
+    addss xmm0, dword[ball + Ball.radius]
+    movss dword[ball + Ball.x], xmm0
     movss   xmm0, dword[ball_speed_x]
     movss   xmm1, dword[pos_mask] 
     andps   xmm0, xmm1
     movss   dword[ball_speed_x] , xmm0
-    movss   xmm0, dword[ball_y] 
-    movss   xmm2, dword[player1_y]  
-    movss   xmm1, dword[paddle_height] 
+    movss   xmm0, dword[ball + Ball.y] 
+    movss   xmm2, dword[player1 + Player.y]  
+    movss   xmm1, dword[paddle + Paddle.height] 
     movss   xmm3, dword[const_2]
     divss   xmm1, xmm3
     addss   xmm1, xmm2
@@ -436,20 +462,20 @@ check_collision_between_ball_and_paddles:
 
     if_for_player2:
     sub rsp, 80
-    movss   xmm0, dword[ball_x] 
+    movss   xmm0, dword[ball + Ball.x] 
     movss    -12[rbp], xmm0
-    movss   xmm0, dword[ball_y] 
+    movss   xmm0, dword[ball + Ball.y] 
     movss   -8[rbp], xmm0
-    movss   xmm0, dword[ball_radius] 
+    movss   xmm0, dword[ball + Ball.radius] 
     movss   -4[rbp], xmm0
 
-    movss   xmm0, dword[player2_x] 
+    movss   xmm0, dword[player2 + Player.x] 
     movss   -32[rbp], xmm0
-    movss   xmm0, dword[player2_y] 
+    movss   xmm0, dword[player2 + Player.y] 
     movss   -28[rbp], xmm0
-    movss   xmm0, dword[paddle_width]
+    movss   xmm0, dword[paddle + Paddle.width]
     movss   -24[rbp], xmm0
-    movss   xmm0, dword[paddle_height] 
+    movss   xmm0, dword[paddle + Paddle.height] 
     movss   -20[rbp], xmm0
 
     mov     rax, -32[rbp]
@@ -468,18 +494,18 @@ check_collision_between_ball_and_paddles:
     je      fin2 
 
     ;; dentro del if
-    movss xmm0, dword[player2_x] 
-    subss xmm0, dword[ball_radius] 
-    movss dword[ball_x], xmm0
+    movss xmm0, dword[player2 + Player.x] 
+    subss xmm0, dword[ball + Ball.radius] 
+    movss dword[ball + Ball.x], xmm0
     movss   xmm0, dword[ball_speed_x]
     movss   xmm1, dword[pos_mask] 
     andps   xmm0, xmm1
     movss   xmm1, dword[neg_mask]
     xorps   xmm0,  xmm1 
     movss   dword[ball_speed_x] , xmm0
-    movss   xmm0, dword[ball_y] 
-    movss   xmm2, dword[player2_y]  
-    movss   xmm1, dword[paddle_height] 
+    movss   xmm0, dword[ball + Ball.y] 
+    movss   xmm2, dword[player2 + Player.y]  
+    movss   xmm1, dword[paddle + Paddle.height] 
     movss   xmm3, dword[const_2]
     divss   xmm1, xmm3
     addss   xmm1, xmm2
@@ -490,23 +516,23 @@ check_collision_between_ball_and_paddles:
 
 check_winner:
     .L1:
-        mov     edx, [player1_score]
+        mov     edx, [player1 + Player.score]
         mov     eax, [max_score]
         cmp     edx, eax
         jb      .L2
-        mov     eax, [player1_score]
-        mov     edx, [player2_score]
+        mov     eax, [player1 + Player.score]
+        mov     edx, [player2 + Player.score]
         cmp     edx, eax
         jnb     .L2
         mov     byte[game_state], PLAYER1_WIN
         jmp     .L3
     .L2:
-        mov     edx, [player2_score]
+        mov     edx, [player2 + Player.score]
         mov     eax, [max_score]
         cmp     edx, eax
         jb      .L4
-        mov     eax, [player2_score]
-        mov     edx, [player1_score]
+        mov     eax, [player2 + Player.score]
+        mov     edx, [player1 + Player.score]
         cmp     edx, eax
         jnb     .L4
         mov     byte[game_state], PLAYER2_WIN
