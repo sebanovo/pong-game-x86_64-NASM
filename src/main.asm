@@ -35,13 +35,11 @@ section .data
     ; x_off_set equ 50
     radius_center_circle dd 50.0
     font_size equ 50
-
     max_score dd 50
     game_state db ONGOING
 
     ; ball 
     ball_radius dd 10.0
-
     ball_x dd 500.0 ; screen_width / 2
     ball_y dd 325.0 ; screen_height / 2
 
@@ -113,7 +111,7 @@ main_loop:
     call ClearBackground
     add rsp, 32
 
- draw_halfway_line:
+draw_halfway_line:
     sub rsp, 32 + 16
     mov ecx, screen_width / 2 
     mov edx, 0 
@@ -260,7 +258,7 @@ mov_player1_KEY_S:
     continue2:
 
 mov_player2_KEY_UP:
-     sub rsp, 32
+    sub rsp, 32
     mov rcx, KEY_UP
     call IsKeyDown
     add rsp, 32
