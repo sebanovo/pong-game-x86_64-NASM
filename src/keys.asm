@@ -117,6 +117,6 @@
 %define  KEY_BACK             4        ; Key: Android back button
 %define  KEY_MENU             82       ; Key: Android menu button
 %define  KEY_VOLUME_UP        24       ; Key: Android volume up button
-%define  KEY_VOLUME_DOWN      25        ; Key: Android volume down button
+%define  KEY_VOLUME_DOWN      25       ; Key: Android volume down button
 
 %endif
