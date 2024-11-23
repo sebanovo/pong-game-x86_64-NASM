@@ -29,8 +29,6 @@ extern DrawCircleLines
 extern CheckCollisionCircleRec
 
 section .data
-    radius_of_center_circle: dd 50.0
-    font_size:               equ 50
 game:
    istruc  Game 
    at Game.title,      db "Ping Pong Game", 0
@@ -71,17 +69,18 @@ player2:
    iend
 
 section .rdata
-    score_format:    db "%u",0
+    score_format:            db "%u",0
+    msg_player1_win:         db "Player 1 wins!", 10, 0
+    msg_player2_win:         db "Player 2 wins!", 10 ,0
+    msg_end_game:            db "FIN DEL JUEGO!", 10, 0
 
-    msg_player1_win: db "Player 1 wins!", 10, 0
-    msg_player2_win: db "Player 2 wins!", 10 ,0
-    msg_end_game:    db "FIN DEL JUEGO!", 10, 0
-
-    x_off_set        dd 50.0
-    const_2:         dd 2.0 
-    const_0_1:       dd 0.1
-    neg_mask:        dd 0x80000000 
-    pos_mask:        dd 0x7FFFFFFF
+    x_off_set                dd 50.0
+    const_2:                 dd 2.0 
+    const_0_1:               dd 0.1
+    neg_mask:                dd 0x80000000 
+    pos_mask:                dd 0x7FFFFFFF
+    radius_of_center_circle: dd 50.0
+    font_size:               dd 50
 
 section .text
     global main
@@ -166,7 +165,7 @@ draw_score:
     shr edx, 2
     mov r8d, 10
     mov dword [rsp+32], RAYWHITE
-    mov r9d, font_size 
+    mov r9d, [font_size]
     call DrawText
     add rsp, 48
 
@@ -183,7 +182,7 @@ draw_score:
     shr edx,2
     mov r8d, 10
     mov dword [rsp+32], RAYWHITE
-    mov r9d, font_size 
+    mov r9d, [font_size]
     call DrawText
     add rsp, 48
 
