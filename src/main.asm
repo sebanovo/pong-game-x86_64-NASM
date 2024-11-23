@@ -12,26 +12,25 @@ extern printf
 global main
 extern InitWindow
 extern SetTargetFPS
+extern CloseWindow
 extern WindowShouldClose
 extern BeginDrawing
-extern ClearBackground
 extern EndDrawing
-extern CloseWindow
-extern DrawCircle
-extern DrawRectangle
+extern ClearBackground
 extern IsKeyDown
-extern DrawLine
-extern DrawCircleLines
 extern TextFormat
 extern DrawText
+extern DrawCircle
+extern DrawRectangle
 extern DrawRectangleRounded
 extern DrawCircleV
+extern DrawLine
+extern DrawCircleLines
 extern CheckCollisionCircleRec
 
 section .data
-    radius_of_center_circle dd 50.0
-    font_size equ 50
-    x_off_set equ 50
+    radius_of_center_circle: dd 50.0
+    font_size:               equ 50
 game:
    istruc  Game 
    at Game.title,      db "Ping Pong Game", 0
@@ -59,15 +58,15 @@ paddle:
 
 player1:
    istruc Player 
-   at Player.x,        dd 50.0
-   at Player.y,        dd 333.3333333333
+   at Player.x,        dd 0.0 ; x_off_set
+   at Player.y,        dd 0.0 ; screen_height / 2 - paddle_height / 2
    at Player.score,    dd 0 
    iend
 
 player2:
    istruc Player 
-   at Player.x,        dd 960.0
-   at Player.y,        dd 333.3333333333
+   at Player.x,        dd 0.0 ; screen_width - x_off_set - paddle_width   
+   at Player.y,        dd 0.0 ; screen_height / 2 - paddle_height / 2
    at Player.score,    dd 0 
    iend
 
@@ -78,7 +77,8 @@ section .rdata
     msg_player2_win: db "Player 2 wins!", 10 ,0
     msg_end_game:    db "FIN DEL JUEGO!", 10, 0
 
-    const_2:         dd 2.0  
+    x_off_set        dd 50.0
+    const_2:         dd 2.0 
     const_0_1:       dd 0.1
     neg_mask:        dd 0x80000000 
     pos_mask:        dd 0x7FFFFFFF
@@ -89,6 +89,23 @@ section .text
 main:
     push rbp
     mov rbp, rsp
+init_position_players:
+    movss xmm0, dword[x_off_set]
+    movss dword[player1 + Player.x], xmm0
+
+    cvtsi2ss xmm1, dword[game + Game.height] 
+    divss xmm1, dword[const_2] 
+    movss xmm2, dword[paddle + Paddle.height]
+    divss xmm2, dword[const_2]
+    subss xmm1, xmm2
+    movss dword[player1 + Player.y], xmm1
+    movss dword[player2 + Player.y], xmm1
+
+    cvtsi2ss xmm3, dword[game + Game.width] 
+    subss xmm3, xmm0
+    subss xmm3, dword[paddle + Paddle.width]
+    movss dword[player2 + Player.x], xmm3
+.done:
 
     sub rsp, 32
     mov ecx, [game + Game.width]
@@ -359,7 +376,7 @@ check_boundary_collision:
     xorps xmm0, xmm1
     movss [ball + Ball.speed_x], xmm0
     inc dword[player2 + Player.score]
-    jmp .L5
+    jmp .done
 
 .L3:
     movss xmm0, dword[ball + Ball.y]
@@ -379,8 +396,6 @@ check_boundary_collision:
     movd xmm1, dword [neg_mask] 
     xorps xmm0, xmm1
     movss [ball + Ball.speed_y], xmm0
-
-.L5: 
 
 .done:
 
