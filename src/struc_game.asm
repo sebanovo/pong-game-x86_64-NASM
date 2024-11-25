@@ -10,23 +10,23 @@ struc Game
 endstruc
 
 struc Ball 
-    .x:           resd 1
-    .y:           resd 1
+    .position.x:  resd 1
+    .position.y:  resd 1
     .radius:      resd 1
-    .speed_x:     resd 1    
-    .speed_y:     resd 1    
+    .speed.x:     resd 1    
+    .speed.y:     resd 1    
 endstruc
 
 struc Player 
-    .x:           resd 1
-    .y:           resd 1
+    .position.x:  resd 1
+    .position.y:  resd 1
     .score:       resd 1
 endstruc
 
 struc Paddle 
     .width:       resd 1
     .height:      resd 1
-    .speed:       resd 1
+    .speed.y:     resd 1
 endstruc
 
 %endif
