@@ -30,43 +30,43 @@ extern CheckCollisionCircleRec
 
 section .data
 game:
-   istruc  Game 
-   at Game.title,            db "Ping Pong Game", 0
-   at Game.width,            dd 1000
-   at Game.height,           dd 650 
-   at Game.max_score,        dd 50 
-   at Game.state,            db ONGOING 
-   iend
+    istruc  Game 
+    at Game.title,           db "Ping Pong Game", 0
+    at Game.width,           dd 1000
+    at Game.height,          dd 650 
+    at Game.max_score,       dd 50 
+    at Game.state,           db ONGOING 
+    iend
 
 ball:
-   istruc Ball 
-   at Ball.position.x,       dd 325.0
-   at Ball.position.y,       dd 500.0
-   at Ball.radius,           dd 10.0
-   at Ball.speed.x,          dd 10.0
-   at Ball.speed.y,          dd 10.0
-   iend
+    istruc Ball 
+    at Ball.position.x,      dd 325.0
+    at Ball.position.y,      dd 500.0
+    at Ball.radius,          dd 10.0
+    at Ball.speed.x,         dd 10.0
+    at Ball.speed.y,         dd 10.0
+    iend
 
 paddle:
-   istruc Paddle 
-   at Paddle.width,          dd 20.0
-   at Paddle.height,         dd 100.0
-   at Paddle.speed.y,        dd 10.0 
-   iend
+    istruc Paddle 
+    at Paddle.width,         dd 20.0
+    at Paddle.height,        dd 100.0
+    at Paddle.speed.y,       dd 10.0 
+    iend
 
 player1:
-   istruc Player 
-   at Player.position.x,     dd 0.0 ; x_off_set
-   at Player.position.y,     dd 0.0 ; screen_height / 2 - paddle_height / 2
-   at Player.score,          dd 0 
-   iend
+    istruc Player 
+    at Player.position.x,    dd 0.0 ; x_off_set
+    at Player.position.y,    dd 0.0 ; screen_height / 2 - paddle_height / 2
+    at Player.score,         dd 0 
+    iend
 
 player2:
-   istruc Player 
-   at Player.position.x,     dd 0.0 ; screen_width - x_off_set - paddle_width   
-   at Player.position.y,     dd 0.0 ; screen_height / 2 - paddle_height / 2
-   at Player.score,          dd 0 
-   iend
+    istruc Player 
+    at Player.position.x,    dd 0.0 ; screen_width - x_off_set - paddle_width   
+    at Player.position.y,    dd 0.0 ; screen_height / 2 - paddle_height / 2
+    at Player.score,         dd 0 
+    iend
 
 section .rdata
     score_format:            db "%u",0

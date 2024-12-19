@@ -32,7 +32,7 @@ Cada jugador controla una paleta que debe golpear la pelota y evitar que pase po
 
 ```bash
 git clone https://github.com/sebanovo/pong-game-x86_64-NASM.git
-cd pong-game
+cd pong-game-x86_64-NASM 
 ```
 
 2. **Compila el código**:
